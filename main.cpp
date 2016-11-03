@@ -7,12 +7,34 @@ public:
   std::string longestValidParen(const std::string & s) {
     size_t begin, end;
     begin = 0;
-    end = begin+1;
-    while (end < s.size() && isValid(s.substr(begin, end-begin)))
-      end++;
-    if (end == s.size() && isValid(s.substr(begin, end-begin)))
-      return s.substr(begin, end-begin);
-    else
+    while (begin < s.size()) {
+        end = s.size();
+        while (end > begin && !isValid(s.substr(begin, end-begin)))
+            end--;
+        if (end == begin)
+            begin = begin+1;
+        else
+            break;
+    }
+
+
+    size_t begin_new = end, end_new;
+    while (begin_new < s.size()) {
+        end_new = s.size();
+        while (end_new > begin_new && !isValid(s.substr(begin_new, end_new-begin_new)))
+            end_new--;
+        if (end_new == begin_new)
+            begin_new++;
+        else {
+            if (end_new-begin_new > end-begin) {
+                begin = begin_new;
+                end = end_new;
+                begin_new = end_new;
+            }
+        }
+    }
+
+    return s.substr(begin, end-begin);
   }
 
 private:
@@ -38,3 +60,12 @@ private:
     return true;
   }
 };
+
+int main() {
+    // std::string str{"(()"};
+    std::string str{")()())"};
+
+    solution soln;
+    std::cout << "The longest substring that contains valid parentheses is:\n"
+              << soln.longestValidParen(str) << std::endl;
+}
